@@ -1,0 +1,36 @@
+{
+  "name": "@jakedeichert/github-release-checker",
+  "version": "1.0.0",
+  "description":
+    "A simple web app that let's you track new releases/tags using your github starred repos",
+  "author": "Jake Deichert",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint": "create-app lint",
+    "test": "create-app test",
+    "format": "create-app format",
+    "dev": "create-app dev",
+    "build": "create-app build",
+    "build:ghpages": "BASE_URL=github-release-checker create-app build",
+    "deploy": "./scripts/deploy_ghpages.sh",
+    "docker": "create-app docker start",
+    "serve": "create-app serve"
+  },
+  "dependencies": {
+    "date-fns": "^1.29.0",
+    "immer": "^1.0.3",
+    "localforage": "^1.5.6",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.3",
+    "react-router-dom": "^4.2.2",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0",
+    "styled-components": "^3.1.6"
+  },
+  "devDependencies": {
+    "@jakedeichert/create-app": "^1.8.0"
+  }
+}

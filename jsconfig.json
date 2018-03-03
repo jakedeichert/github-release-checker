@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ES2016",
+        "baseUrl": "./src",
+        "jsx": "react",
+        // Apparently this is not needed anymore/invalid?
+        // Module resolution so index.js scripts are properly found for intellisense.
+        // https://www.typescriptlang.org/docs/handbook/module-resolution.html
+        "moduleResolution": "node"
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
