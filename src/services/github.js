@@ -38,6 +38,9 @@ export const getStars = async (username, apiToken) => {
   );
   const linkHeader = headers.get('Link') || '';
   const lastLink = linkHeader.match(/page=(\d+)&per_page=100>; rel="last"$/);
+
+  if (!lastLink) return allRepos;
+
   const lastPage = lastLink.length === 2 ? lastLink[1] : 1;
   const requests = [];
   while (page < lastPage) {
