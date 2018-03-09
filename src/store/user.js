@@ -1,5 +1,6 @@
 import localforage from 'localforage';
 import immer from 'immer';
+import { actions as repoActions } from 'store/repos';
 
 const key = 'user';
 const cacheKey = `store:${key}`;
@@ -63,6 +64,7 @@ actions.signOut = () => {
   return dispatch => {
     dispatch(signOut());
     updateCache('', '');
+    dispatch(repoActions.clear());
   };
 };
 

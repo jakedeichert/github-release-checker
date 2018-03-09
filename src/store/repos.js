@@ -1,6 +1,7 @@
 import localforage from 'localforage';
 import immer from 'immer';
 import addMins from 'date-fns/add_minutes';
+import substractMins from 'date-fns/sub_minutes';
 import { selectors as userSelectors } from 'store/user';
 import { actionErr } from 'utils/storeHelpers';
 import * as githubService from 'services/github';
@@ -8,6 +9,7 @@ import * as githubService from 'services/github';
 const key = 'repos';
 const cacheKey = `store:${key}`;
 const cacheTtlMins = 60;
+const CLEAR_REPOS = 'CLEAR_REPOS';
 const RECEIVE_STARS = 'RECEIVE_STARS';
 const RECEIVE_STARS_ERR = 'RECEIVE_STARS_ERR';
 const RECEIVE_CACHED_STATE = 'RECEIVE_CACHED_STATE';
@@ -36,6 +38,13 @@ export default (state = initialState, action) => {
     switch (action.type) {
       case RECEIVE_STARS: {
         const { repos } = action;
+        const unstarredRepos = Object.keys(draft.byId).filter(oldId => {
+          return !repos.find(r => `${r.id}` === oldId);
+        });
+        unstarredRepos.forEach(id => {
+          delete draft.byId[id];
+        });
+
         repos.forEach(repo => {
           const { id, name, owner } = repo;
           // TODO: owner or repo name could change
@@ -89,14 +98,22 @@ export default (state = initialState, action) => {
         });
         break;
       }
+      case CLEAR_REPOS: {
+        draft.byId = {};
+        break;
+      }
     }
   });
 };
 
-const updateCache = async (byId, forceUpdate = false) => {
+const updateCache = async (
+  byId,
+  forceUpdate = false,
+  cacheTime = Date.now()
+) => {
   if (!forceUpdate && (await isCacheValid())) return;
   const cache = {
-    time: Date.now(),
+    time: cacheTime,
     byId,
   };
   await localforage.setItem(cacheKey, cache);
@@ -122,10 +139,22 @@ selectors.getCachedState = async () => {
 
 export const actions = {};
 
+actions.clear = () => {
+  return async dispatch => {
+    dispatch(clearRepos());
+    // Clear the cache and invalidate the time
+    updateCache(
+      {},
+      true,
+      substractMins(Date.now(), cacheTtlMins + 1).getTime()
+    );
+  };
+};
+
 actions.updateCache = (forceUpdate = false) => {
   return async (dispatch, getState) => {
-    const allState = selectors.getAll(getState());
-    updateCache(allState, forceUpdate);
+    const byId = selectors.getAll(getState());
+    updateCache(byId, forceUpdate);
   };
 };
 
@@ -208,6 +237,10 @@ actions.markAllAsRead = () => {
     dispatch(actions.updateCache(true));
   };
 };
+
+const clearRepos = () => ({
+  type: CLEAR_REPOS,
+});
 
 const markAllAsRead = () => ({
   type: MARK_ALL_AS_READ,
