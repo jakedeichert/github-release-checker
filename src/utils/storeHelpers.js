@@ -1,6 +1,8 @@
-export const actionErr = type => {
-  return err => ({
-    type,
-    err,
-  });
+export const actionErr = (dispatch, type) => {
+  return err => {
+    dispatch({
+      type,
+      err,
+    });
+  };
 };

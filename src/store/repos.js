@@ -138,7 +138,7 @@ actions.getStars = () => {
 
     const results = await githubService
       .getStars(username, apiToken)
-      .catch(actionErr(RECEIVE_STARS_ERR));
+      .catch(actionErr(dispatch, RECEIVE_STARS_ERR));
     dispatch(receiveStars(results));
   };
 };
@@ -164,7 +164,7 @@ actions.getReleases = () => {
       .then(results => {
         dispatch(receiveReleases(results));
       })
-      .catch(actionErr(RECEIVE_RELEASES_ERR));
+      .catch(actionErr(dispatch, RECEIVE_RELEASES_ERR));
   };
 };
 
@@ -191,7 +191,7 @@ actions.getTags = () => {
       .then(results => {
         dispatch(receiveTags(results));
       })
-      .catch(actionErr(RECEIVE_TAGS_ERR));
+      .catch(actionErr(dispatch, RECEIVE_TAGS_ERR));
   };
 };
 
