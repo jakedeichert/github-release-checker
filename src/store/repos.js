@@ -3,7 +3,6 @@ import addMins from 'date-fns/add_minutes';
 import substractMins from 'date-fns/sub_minutes';
 import { selectors as userSelectors } from 'store/user';
 import { actionErr } from 'utils/storeHelpers';
-import * as githubService from 'api/github';
 import * as githubApi from 'api/github';
 
 const key = 'repos';
