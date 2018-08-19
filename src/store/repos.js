@@ -42,8 +42,12 @@ export const reducer = (draft, action) => {
 
       repos.forEach(repo => {
         const { id, name, owner } = repo;
-        // TODO: owner or repo name could change
-        if (draft.byId[id]) return;
+        // Update name and owner every time
+        if (draft.byId[id]) {
+          draft.byId[id].name = name;
+          draft.byId[id].ownerUsername = owner.login;
+          return;
+        }
         draft.byId[id] = {
           id,
           name,
@@ -175,9 +179,8 @@ actions.getReleases = () => async (dispatch, getState) => {
       );
     });
 
-    return Promise.all(p).then(results => {
-      dispatch(receiveReleases(results));
-    });
+    const results = await Promise.all(p);
+    dispatch(receiveReleases(results));
   } catch (err) {
     actionErr(dispatch, RECEIVE_RELEASES, err);
   }
@@ -202,9 +205,8 @@ actions.getTags = () => async (dispatch, getState) => {
       );
     });
 
-    return Promise.all(p).then(results => {
-      dispatch(receiveTags(results));
-    });
+    const results = await Promise.all(p);
+    dispatch(receiveTags(results));
   } catch (err) {
     actionErr(dispatch, RECEIVE_TAGS, err);
   }

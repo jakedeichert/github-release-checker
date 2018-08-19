@@ -30,28 +30,12 @@ const fetchConfig = (method, options = {}) => {
 const apiResponse = async response => {
   const contentType = response.headers.get('content-type');
   let results;
-  switch (contentType) {
-    case 'application/json':
-      results = await response.json().then(camelCaseDeep);
-      break;
-    case 'application/x-json-stream':
-      results = await handleNewlineDelimitedJsonResponse(response);
-      break;
-    default:
-      results = await response.text();
+  if (contentType.includes('application/json')) {
+    results = await response.json().then(camelCaseDeep);
+  } else {
+    results = await response.text();
   }
   return { results, response };
-};
-
-const handleNewlineDelimitedJsonResponse = async response => {
-  const body = await response.text();
-  const jsonLines = body.split('\n');
-  const data = [];
-  jsonLines.forEach(l => {
-    if (!l.length) return;
-    data.push(camelCaseDeep(JSON.parse(l)));
-  });
-  return data;
 };
 
 const apiError = (response, route, body = null) => {
