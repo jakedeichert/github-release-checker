@@ -5,8 +5,8 @@ echo "DEPLOYING TO GITHUB PAGES"
 echo "==========================================================="
 
 THIS_SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-cd $THIS_SCRIPTS_DIR/..
+ROOT_DIR="$THIS_SCRIPTS_DIR/.."
+cd $ROOT_DIR
 
 echo ">>> Building for production..."
 yarn run build:ghpages
