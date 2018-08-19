@@ -4,6 +4,7 @@ import substractMins from 'date-fns/sub_minutes';
 import { selectors as userSelectors } from 'store/user';
 import { actionErr } from 'utils/storeHelpers';
 import * as githubService from 'api/github';
+import * as githubApi from 'api/github';
 
 const key = 'repos';
 const cacheKey = `store:${key}`;
@@ -151,11 +152,10 @@ actions.updateCache = (forceUpdate = false) => async (dispatch, getState) => {
 actions.getStars = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    const apiToken = userSelectors.getApiToken(state);
     const username = userSelectors.getUsername(state);
     if (await isCacheValid()) return;
 
-    const results = await githubService.getStars(username, apiToken);
+    const results = await githubApi.getStars(username);
     dispatch(receiveStars(results));
   } catch (err) {
     actionErr(dispatch, RECEIVE_STARS, err);
@@ -165,7 +165,6 @@ actions.getStars = () => async (dispatch, getState) => {
 actions.getReleases = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    const apiToken = userSelectors.getApiToken(state);
     const repos = selectors.getAllValues(state);
     if (await isCacheValid()) return;
 
@@ -173,8 +172,8 @@ actions.getReleases = () => async (dispatch, getState) => {
 
     repos.forEach(r => {
       p.push(
-        githubService
-          .getReleases(r.ownerUsername, r.name, apiToken)
+        githubApi
+          .getReleases(r.ownerUsername, r.name)
           .then(releases => ({ repoId: r.id, releases }))
       );
     });
@@ -189,7 +188,6 @@ actions.getReleases = () => async (dispatch, getState) => {
 actions.getTags = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    const apiToken = userSelectors.getApiToken(state);
     const repos = selectors.getAllValues(state);
     if (await isCacheValid()) return;
 
@@ -199,8 +197,8 @@ actions.getTags = () => async (dispatch, getState) => {
       // Don't load tags if we have releases
       if (r.releases.length || r.lastReadReleaseById) return;
       p.push(
-        githubService
-          .getTags(r.ownerUsername, r.name, apiToken)
+        githubApi
+          .getTags(r.ownerUsername, r.name)
           .then(tags => ({ repoId: r.id, tags }))
       );
     });

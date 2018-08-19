@@ -1,5 +1,6 @@
 import localforage from 'localforage';
 import { actions as repoActions } from 'store/repos';
+import * as githubApi from 'api/github';
 
 const key = 'user';
 const cacheKey = `store:${key}`;
@@ -53,16 +54,19 @@ export const actions = {};
 actions.signIn = (username, apiToken) => dispatch => {
   dispatch(recieveUser(username, apiToken));
   updateCache(username, apiToken);
+  githubApi.setAuthToken(apiToken);
 };
 
 actions.signOut = () => dispatch => {
   dispatch(signOut());
   updateCache('', '');
   dispatch(repoActions.clear());
+  githubApi.setAuthToken(null);
 };
 
 actions.loadCache = () => async dispatch => {
   const { username, apiToken } = await selectors.getCachedState();
+  githubApi.setAuthToken(apiToken);
   return dispatch(recieveUser(username, apiToken));
 };
 
