@@ -1,5 +1,4 @@
 import localforage from 'localforage';
-import immer from 'immer';
 import { actions as repoActions } from 'store/repos';
 
 const key = 'user';
@@ -7,27 +6,25 @@ const cacheKey = `store:${key}`;
 const RECEIVE_USER = 'RECEIVE_USER';
 const SIGN_OUT = 'SIGN_OUT';
 
-const initialState = {
+export const initialState = {
   username: '',
   apiToken: '',
 };
 
-export default (state = initialState, action) => {
-  return immer(state, draft => {
-    switch (action.type) {
-      case RECEIVE_USER: {
-        const { username, apiToken } = action;
-        draft.username = username;
-        draft.apiToken = apiToken;
-        break;
-      }
-      case SIGN_OUT: {
-        draft.username = '';
-        draft.apiToken = '';
-        break;
-      }
+export const reducer = (draft, action) => {
+  switch (action.type) {
+    case RECEIVE_USER: {
+      const { username, apiToken } = action;
+      draft.username = username;
+      draft.apiToken = apiToken;
+      break;
     }
-  });
+    case SIGN_OUT: {
+      draft.username = '';
+      draft.apiToken = '';
+      break;
+    }
+  }
 };
 
 const updateCache = async (username, apiToken) => {
@@ -53,26 +50,20 @@ selectors.getCachedState = async () => {
 
 export const actions = {};
 
-actions.signIn = (username, apiToken) => {
-  return dispatch => {
-    dispatch(recieveUser(username, apiToken));
-    updateCache(username, apiToken);
-  };
+actions.signIn = (username, apiToken) => dispatch => {
+  dispatch(recieveUser(username, apiToken));
+  updateCache(username, apiToken);
 };
 
-actions.signOut = () => {
-  return dispatch => {
-    dispatch(signOut());
-    updateCache('', '');
-    dispatch(repoActions.clear());
-  };
+actions.signOut = () => dispatch => {
+  dispatch(signOut());
+  updateCache('', '');
+  dispatch(repoActions.clear());
 };
 
-actions.loadCache = () => {
-  return async dispatch => {
-    const { username, apiToken } = await selectors.getCachedState();
-    return dispatch(recieveUser(username, apiToken));
-  };
+actions.loadCache = () => async dispatch => {
+  const { username, apiToken } = await selectors.getCachedState();
+  return dispatch(recieveUser(username, apiToken));
 };
 
 const recieveUser = (username, apiToken) => ({

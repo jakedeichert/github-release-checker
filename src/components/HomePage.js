@@ -1,5 +1,4 @@
-import React from 'react';
-import styled from 'styled-components';
+import { React, styled } from 'utils/component';
 import Header from 'components/Header';
 import RepoList from 'components/RepoList';
 import IfAuthenticated from 'components/IfAuthenticated';

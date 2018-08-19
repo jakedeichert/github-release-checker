@@ -1,5 +1,4 @@
-import pt from 'prop-types';
-import { connect } from 'react-redux';
+import { pt, connect } from 'utils/component';
 import { selectors as userSelectors } from 'store/user';
 
 export const IfAuthenticated = ({ hasToken, not, children }) => {

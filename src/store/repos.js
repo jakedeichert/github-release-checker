@@ -1,25 +1,21 @@
 import localforage from 'localforage';
-import immer from 'immer';
 import addMins from 'date-fns/add_minutes';
 import substractMins from 'date-fns/sub_minutes';
 import { selectors as userSelectors } from 'store/user';
 import { actionErr } from 'utils/storeHelpers';
-import * as githubService from 'services/github';
+import * as githubService from 'api/github';
 
 const key = 'repos';
 const cacheKey = `store:${key}`;
 const cacheTtlMins = 60;
 const CLEAR_REPOS = 'CLEAR_REPOS';
 const RECEIVE_STARS = 'RECEIVE_STARS';
-const RECEIVE_STARS_ERR = 'RECEIVE_STARS_ERR';
 const RECEIVE_CACHED_STATE = 'RECEIVE_CACHED_STATE';
 const RECEIVE_RELEASES = 'RECEIVE_RELEASES';
-const RECEIVE_RELEASES_ERR = 'RECEIVE_RELEASES_ERR';
 const RECEIVE_TAGS = 'RECEIVE_TAGS';
-const RECEIVE_TAGS_ERR = 'RECEIVE_TAGS_ERR';
 const MARK_ALL_AS_READ = 'MARK_ALL_AS_READ';
 
-const initialState = {
+export const initialState = {
   byId: {
     // '1': {
     //   id: 1,
@@ -33,77 +29,75 @@ const initialState = {
   },
 };
 
-export default (state = initialState, action) => {
-  return immer(state, draft => {
-    switch (action.type) {
-      case RECEIVE_STARS: {
-        const { repos } = action;
-        const unstarredRepos = Object.keys(draft.byId).filter(oldId => {
-          return !repos.find(r => `${r.id}` === oldId);
-        });
-        unstarredRepos.forEach(id => {
-          delete draft.byId[id];
-        });
+export const reducer = (draft, action) => {
+  switch (action.type) {
+    case RECEIVE_STARS: {
+      const { repos } = action;
+      const unstarredRepos = Object.keys(draft.byId).filter(oldId => {
+        return !repos.find(r => `${r.id}` === oldId);
+      });
+      unstarredRepos.forEach(id => {
+        delete draft.byId[id];
+      });
 
-        repos.forEach(repo => {
-          const { id, name, owner } = repo;
-          // TODO: owner or repo name could change
-          if (draft.byId[id]) return;
-          draft.byId[id] = {
-            id,
-            name,
-            ownerUsername: owner.login,
-            releases: [],
-            tags: [],
-            lastReadTagByName: null,
-            lastReadReleaseById: null,
-          };
-        });
-        break;
-      }
-      case RECEIVE_CACHED_STATE: {
-        const { byId } = action;
-        draft.byId = byId;
-        break;
-      }
-      case RECEIVE_RELEASES: {
-        action.releases.forEach(({ repoId, releases }) => {
-          const repo = draft.byId[repoId];
-          const newReleases = repo.lastReadReleaseById
-            ? releases.filter(r => r.id > repo.lastReadReleaseById)
-            : releases;
-          repo.releases = newReleases;
-        });
-        break;
-      }
-      case RECEIVE_TAGS: {
-        action.tags.forEach(({ repoId, tags }) => {
-          const repo = draft.byId[repoId];
-          const newTags = repo.lastReadTagByName
-            ? tags.slice(
-                0,
-                tags.findIndex(i => i.name === repo.lastReadTagByName)
-              )
-            : tags;
-          repo.tags = newTags;
-        });
-        break;
-      }
-      case MARK_ALL_AS_READ: {
-        Object.values(draft.byId).forEach(r => {
-          if (r.releases.length) r.lastReadReleaseById = r.releases[0].id;
-          if (r.tags.length) r.lastReadTagByName = r.tags[0].name;
-          r.releases = [];
-          r.tags = [];
-        });
-        break;
-      }
-      case CLEAR_REPOS: {
-        draft.byId = {};
-        break;
-      }
+      repos.forEach(repo => {
+        const { id, name, owner } = repo;
+        // TODO: owner or repo name could change
+        if (draft.byId[id]) return;
+        draft.byId[id] = {
+          id,
+          name,
+          ownerUsername: owner.login,
+          releases: [],
+          tags: [],
+          lastReadTagByName: null,
+          lastReadReleaseById: null,
+        };
+      });
+      break;
     }
-  });
+    case RECEIVE_CACHED_STATE: {
+      const { byId } = action;
+      draft.byId = byId;
+      break;
+    }
+    case RECEIVE_RELEASES: {
+      action.releases.forEach(({ repoId, releases }) => {
+        const repo = draft.byId[repoId];
+        const newReleases = repo.lastReadReleaseById
+          ? releases.filter(r => r.id > repo.lastReadReleaseById)
+          : releases;
+        repo.releases = newReleases;
+      });
+      break;
+    }
+    case RECEIVE_TAGS: {
+      action.tags.forEach(({ repoId, tags }) => {
+        const repo = draft.byId[repoId];
+        const newTags = repo.lastReadTagByName
+          ? tags.slice(
+              0,
+              tags.findIndex(i => i.name === repo.lastReadTagByName)
+            )
+          : tags;
+        repo.tags = newTags;
+      });
+      break;
+    }
+    case MARK_ALL_AS_READ: {
+      Object.values(draft.byId).forEach(r => {
+        if (r.releases.length) r.lastReadReleaseById = r.releases[0].id;
+        if (r.tags.length) r.lastReadTagByName = r.tags[0].name;
+        r.releases = [];
+        r.tags = [];
+      });
+      break;
+    }
+    case CLEAR_REPOS: {
+      draft.byId = {};
+      break;
+    }
+  }
 };
 
 const updateCache = async (
@@ -139,41 +133,33 @@ selectors.getCachedState = async () => {
 
 export const actions = {};
 
-actions.clear = () => {
-  return async dispatch => {
-    dispatch(clearRepos());
-    // Clear the cache and invalidate the time
-    updateCache(
-      {},
-      true,
-      substractMins(Date.now(), cacheTtlMins + 1).getTime()
-    );
-  };
+actions.clear = () => async dispatch => {
+  dispatch(clearRepos());
+  // Clear the cache and invalidate the time
+  updateCache({}, true, substractMins(Date.now(), cacheTtlMins + 1).getTime());
 };
 
-actions.updateCache = (forceUpdate = false) => {
-  return async (dispatch, getState) => {
-    const byId = selectors.getAll(getState());
-    updateCache(byId, forceUpdate);
-  };
+actions.updateCache = (forceUpdate = false) => async (dispatch, getState) => {
+  const byId = selectors.getAll(getState());
+  updateCache(byId, forceUpdate);
 };
 
-actions.getStars = () => {
-  return async (dispatch, getState) => {
+actions.getStars = () => async (dispatch, getState) => {
+  try {
     const state = getState();
     const apiToken = userSelectors.getApiToken(state);
     const username = userSelectors.getUsername(state);
     if (await isCacheValid()) return;
 
-    const results = await githubService
-      .getStars(username, apiToken)
-      .catch(actionErr(dispatch, RECEIVE_STARS_ERR));
+    const results = await githubService.getStars(username, apiToken);
     dispatch(receiveStars(results));
-  };
+  } catch (err) {
+    actionErr(dispatch, RECEIVE_STARS, err);
+  }
 };
 
-actions.getReleases = () => {
-  return async (dispatch, getState) => {
+actions.getReleases = () => async (dispatch, getState) => {
+  try {
     const state = getState();
     const apiToken = userSelectors.getApiToken(state);
     const repos = selectors.getAllValues(state);
@@ -189,16 +175,16 @@ actions.getReleases = () => {
       );
     });
 
-    return Promise.all(p)
-      .then(results => {
-        dispatch(receiveReleases(results));
-      })
-      .catch(actionErr(dispatch, RECEIVE_RELEASES_ERR));
-  };
+    return Promise.all(p).then(results => {
+      dispatch(receiveReleases(results));
+    });
+  } catch (err) {
+    actionErr(dispatch, RECEIVE_RELEASES, err);
+  }
 };
 
-actions.getTags = () => {
-  return async (dispatch, getState) => {
+actions.getTags = () => async (dispatch, getState) => {
+  try {
     const state = getState();
     const apiToken = userSelectors.getApiToken(state);
     const repos = selectors.getAllValues(state);
@@ -216,26 +202,22 @@ actions.getTags = () => {
       );
     });
 
-    return Promise.all(p)
-      .then(results => {
-        dispatch(receiveTags(results));
-      })
-      .catch(actionErr(dispatch, RECEIVE_TAGS_ERR));
-  };
+    return Promise.all(p).then(results => {
+      dispatch(receiveTags(results));
+    });
+  } catch (err) {
+    actionErr(dispatch, RECEIVE_TAGS, err);
+  }
 };
 
-actions.loadCache = () => {
-  return async dispatch => {
-    const cache = await selectors.getCachedState();
-    return dispatch(receiveCachedState(cache));
-  };
+actions.loadCache = () => async dispatch => {
+  const cache = await selectors.getCachedState();
+  return dispatch(receiveCachedState(cache));
 };
 
-actions.markAllAsRead = () => {
-  return async dispatch => {
-    dispatch(markAllAsRead());
-    dispatch(actions.updateCache(true));
-  };
+actions.markAllAsRead = () => async dispatch => {
+  dispatch(markAllAsRead());
+  dispatch(actions.updateCache(true));
 };
 
 const clearRepos = () => ({

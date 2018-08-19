@@ -1,5 +1,4 @@
-import React from 'react';
-import pt from 'prop-types';
+import { React, pt } from 'utils/component';
 import { Link as ReactRouterLink } from 'react-router-dom';
 
 const ExternalLink = ({ to, children }) => (

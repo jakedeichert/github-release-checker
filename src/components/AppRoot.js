@@ -1,6 +1,5 @@
-import React from 'react';
+import { React, injectGlobal } from 'utils/component';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
-import { injectGlobal } from 'styled-components';
 import HomePage from 'components/HomePage';
 
 injectGlobal`

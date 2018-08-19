@@ -1,6 +1,4 @@
-import React from 'react';
-import pt from 'prop-types';
-import styled from 'styled-components';
+import { React, pt, styled } from 'utils/component';
 
 const Wrapper = styled.div`
   padding: 10px;

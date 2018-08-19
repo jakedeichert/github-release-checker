@@ -1,6 +1,4 @@
-import React from 'react';
-import pt from 'prop-types';
-import { connect } from 'react-redux';
+import { React, pt, connect } from 'utils/component';
 import { Button } from 'components/Button';
 import { actions as repoActions } from 'store/repos';
 
@@ -18,6 +16,9 @@ export class MarkAsRead extends React.Component {
   };
 }
 
-export default connect(null, dispatch => ({
-  markAllAsRead: () => dispatch(repoActions.markAllAsRead()),
-}))(MarkAsRead);
+export default connect(
+  null,
+  dispatch => ({
+    markAllAsRead: () => dispatch(repoActions.markAllAsRead()),
+  })
+)(MarkAsRead);

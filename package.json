@@ -1,8 +1,7 @@
 {
   "name": "@jakedeichert/github-release-checker",
   "version": "1.0.0",
-  "description":
-    "A simple web app that let's you track new releases/tags using your github starred repos",
+  "description": "A simple web app that let's you track new releases/tags using your github starred repos",
   "author": "Jake Deichert",
   "license": "MIT",
   "private": true,
@@ -19,18 +18,18 @@
   },
   "dependencies": {
     "date-fns": "^1.29.0",
-    "immer": "^1.0.3",
-    "localforage": "^1.5.6",
-    "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "immer": "^1.5.0",
+    "localforage": "^1.7.2",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "react-redux": "^5.0.3",
-    "react-router-dom": "^4.2.2",
-    "redux": "^3.5.2",
-    "redux-thunk": "^2.1.0",
-    "styled-components": "^3.1.6"
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "styled-components": "^3.4.2"
   },
   "devDependencies": {
-    "@jakedeichert/create-app": "^1.8.0"
+    "@jakedeichert/create-app-cli": "^1.4.0"
   }
 }

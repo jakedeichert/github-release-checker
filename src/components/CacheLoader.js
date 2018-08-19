@@ -1,6 +1,4 @@
-import React from 'react';
-import pt from 'prop-types';
-import { connect } from 'react-redux';
+import { React, pt, connect } from 'utils/component';
 import { actions as userActions } from 'store/user';
 import { actions as repoActions } from 'store/repos';
 
@@ -21,7 +19,10 @@ export class CacheLoader extends React.Component {
   }
 }
 
-export default connect(null, dispatch => ({
-  loadCachedUser: () => dispatch(userActions.loadCache()),
-  loadCachedRepos: () => dispatch(repoActions.loadCache()),
-}))(CacheLoader);
+export default connect(
+  null,
+  dispatch => ({
+    loadCachedUser: () => dispatch(userActions.loadCache()),
+    loadCachedRepos: () => dispatch(repoActions.loadCache()),
+  })
+)(CacheLoader);

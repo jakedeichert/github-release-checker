@@ -1,5 +1,3 @@
-import { camelCaseDeep } from 'utils/obj';
-
 /**
  * Let initial app data from server override reducer defaults.
  *

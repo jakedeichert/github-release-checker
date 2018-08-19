@@ -1,4 +1,3 @@
-import 'static/html/index.html';
 import localforage from 'localforage';
 import React from 'react';
 import { render } from 'react-dom';

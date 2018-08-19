@@ -1,6 +1,4 @@
-import React from 'react';
-import pt from 'prop-types';
-import { connect } from 'react-redux';
+import { React, pt, connect } from 'utils/component';
 import { actions as repoActions } from 'store/repos';
 import { Button } from 'components/Button';
 
@@ -31,9 +29,12 @@ export class Refresh extends React.Component {
   };
 }
 
-export default connect(null, dispatch => ({
-  getStars: () => dispatch(repoActions.getStars()),
-  getReleases: () => dispatch(repoActions.getReleases()),
-  getTags: () => dispatch(repoActions.getTags()),
-  updateCache: () => dispatch(repoActions.updateCache()),
-}))(Refresh);
+export default connect(
+  null,
+  dispatch => ({
+    getStars: () => dispatch(repoActions.getStars()),
+    getReleases: () => dispatch(repoActions.getReleases()),
+    getTags: () => dispatch(repoActions.getTags()),
+    updateCache: () => dispatch(repoActions.updateCache()),
+  })
+)(Refresh);

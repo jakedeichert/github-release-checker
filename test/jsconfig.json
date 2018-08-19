@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "baseUrl": "../src",
+    "jsx": "react",
+    "moduleResolution": "node"
+  },
+  // Needed so VS Code intellisense can find imported modules
+  "include": ["./**/*"]
+}

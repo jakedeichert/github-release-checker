@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react';
-import styled from 'styled-components';
+import { React, styled } from 'utils/component';
 import formatDate from 'date-fns/format';
 import Link from 'components/Link';
 import IfReleases from 'components/IfReleases';
@@ -76,8 +75,7 @@ export default class RepoList extends React.Component {
     return (
       <RepoName>
         <Link ext={getRepoUrl(ownerUsername, name)}>
-          {ownerUsername}/
-          {name}
+          {ownerUsername}/{name}
         </Link>
       </RepoName>
     );
@@ -87,7 +85,7 @@ export default class RepoList extends React.Component {
     const { releases } = repo;
     const d = i => `- ${formatDate(i.publishedAt, 'ddd, MMM DD, YYYY')}`;
     return (
-      <Fragment>
+      <React.Fragment>
         <h4>Releases</h4>
         <List>
           {releases.map(i => (
@@ -96,17 +94,21 @@ export default class RepoList extends React.Component {
             </li>
           ))}
         </List>
-      </Fragment>
+      </React.Fragment>
     );
   }
 
   renderTags(repo) {
     const { tags } = repo;
     return (
-      <Fragment>
+      <React.Fragment>
         <h4>Tags</h4>
-        <List>{tags.map(i => <li key={i.commit.sha}>{i.name}</li>)}</List>
-      </Fragment>
+        <List>
+          {tags.map(i => (
+            <li key={i.commit.sha}>{i.name}</li>
+          ))}
+        </List>
+      </React.Fragment>
     );
   }
 }

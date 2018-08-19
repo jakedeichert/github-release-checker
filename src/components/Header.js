@@ -1,5 +1,4 @@
-import React from 'react';
-import styled from 'styled-components';
+import { React, styled } from 'utils/component';
 import MarkAsRead from 'components/MarkAsRead';
 import Refresh from 'components/Refresh';
 import SignOut from 'components/SignOut';

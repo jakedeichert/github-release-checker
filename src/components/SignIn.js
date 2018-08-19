@@ -1,7 +1,4 @@
-import React from 'react';
-import pt from 'prop-types';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
+import { React, pt, styled, connect } from 'utils/component';
 import { actions as userActions } from 'store/user';
 import Link from 'components/Link';
 import { Button } from 'components/Button';
@@ -89,7 +86,10 @@ export class SignIn extends React.Component {
   };
 }
 
-export default connect(null, dispatch => ({
-  signIn: (username, apiToken) =>
-    dispatch(userActions.signIn(username, apiToken)),
-}))(SignIn);
+export default connect(
+  null,
+  dispatch => ({
+    signIn: (username, apiToken) =>
+      dispatch(userActions.signIn(username, apiToken)),
+  })
+)(SignIn);
