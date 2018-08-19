@@ -11,7 +11,7 @@
     "format": "create-app format",
     "dev": "create-app dev",
     "build": "create-app build",
-    "build:ghpages": "BASE_PATH=github-release-checker create-app build",
+    "build:ghpages": "BASE_PATH=/github-release-checker create-app build",
     "deploy": "./scripts/deploy_ghpages.sh",
     "docker": "create-app docker start",
     "serve": "create-app serve"
